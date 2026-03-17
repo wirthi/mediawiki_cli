@@ -1,8 +1,10 @@
 package at.cwirth.mediawiki_cli.util;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,7 +23,8 @@ public class CredentialsReader {
     public static Map<String, String> readCredentials(String filePath) throws IOException {
         Map<String, String> credentials = new HashMap<>();
         
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(new FileInputStream(filePath), StandardCharsets.UTF_8))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 line = line.trim();

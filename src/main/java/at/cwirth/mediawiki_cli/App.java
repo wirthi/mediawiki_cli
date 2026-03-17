@@ -18,6 +18,9 @@ public class App
     
     public static void main(String[] args)
     {
+        // Set UTF-8 encoding for console output to handle special characters correctly
+        System.setProperty("file.encoding", "UTF-8");
+        
         if (args.length == 0) {
             printUsage();
             return;

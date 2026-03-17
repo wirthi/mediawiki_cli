@@ -106,6 +106,16 @@ This document outlines the setup and guidelines for working with the MediaWiki C
 - Use `%*` to pass all arguments to Java
 - Use `setlocal`/`endlocal` for environment isolation
 
+### UTF-8 Console Limitations
+- Windows `cmd.exe` has limited UTF-8 support even with `chcp 65001`
+- Special characters may display incorrectly in console output
+- **Data integrity is preserved**: UTF-8 works correctly for API communication
+- For full UTF-8 display, consider:
+  - Using PowerShell instead of cmd.exe
+  - Redirecting output to files
+  - Using Windows Terminal with proper font support
+  - Testing with `System.setProperty("file.encoding", "UTF-8")`
+
 ## Documentation
 - **Javadoc**: Document public methods and classes (needs improvement)
 - **README**: User-facing documentation with examples
@@ -116,7 +126,8 @@ This document outlines the setup and guidelines for working with the MediaWiki C
 
 ### Java HTTP Client
 - Use `HttpClient.newBuilder().cookieHandler(new CookieManager())` for session persistence
-- `BodyPublishers.ofString()` for POST requests with form data
+- `BodyPublishers.ofString(queryString, StandardCharsets.UTF_8)` for explicit UTF-8 POST data
+- `BodyHandlers.ofString(StandardCharsets.UTF_8)` for explicit UTF-8 response handling
 - Always check response bodies for errors even on 200 status codes
 
 ### JSON Processing with Jackson
@@ -147,8 +158,9 @@ This document outlines the setup and guidelines for working with the MediaWiki C
 - Add proper method overloading for update operations
 - Improve error handling with custom exceptions
 - Add more comprehensive logging
-- Implement proper argument parsing library
+- Implement proper argument parsing library (e.g., args4j)
 - Add configuration file support beyond credentials
+- **UTF-8 improvements**: Investigate better Windows console output handling
 
 ## Contributing
 - Fork the repository.

@@ -222,7 +222,7 @@ public class MediaWikiClient {
                 .GET()
                 .build();
         
-        HttpResponse<String> httpResponse = httpClient.send(httpRequest, BodyHandlers.ofString());
+        HttpResponse<String> httpResponse = httpClient.send(httpRequest, BodyHandlers.ofString(StandardCharsets.UTF_8));
         return httpResponse.body();
     }
     
@@ -239,10 +239,10 @@ public class MediaWikiClient {
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(apiUrl))
                 .header("Content-Type", "application/x-www-form-urlencoded")
-                .POST(BodyPublishers.ofString(queryString))
+                .POST(BodyPublishers.ofString(queryString, StandardCharsets.UTF_8))
                 .build();
         
-        HttpResponse<String> httpResponse = httpClient.send(httpRequest, BodyHandlers.ofString());
+        HttpResponse<String> httpResponse = httpClient.send(httpRequest, BodyHandlers.ofString(StandardCharsets.UTF_8));
         return httpResponse.body();
     }
     
