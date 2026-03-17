@@ -45,6 +45,8 @@ password=your-password
 
 Replace the placeholders with your actual MediaWiki site URL, username, and password.
 
+**Note:** The credentials file is read using UTF-8 encoding, so you can use special characters in passwords if needed.
+
 ## Usage
 
 ### Read a Page
@@ -88,12 +90,19 @@ Basic update without summary:
 java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --update "Benutzer:YourName/TestPage" "This is my updated content."
 ```
 
-Update with edit summary:
+Update with edit summary (supports UTF-8):
 ```bash
 java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --update "Benutzer:YourName/TestPage" "Fixed typo" "Typo correction"
 ```
 
+Update with German umlauts:
+```bash
+java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --update "Benutzer:YourName/TestPage" "Updated content with umlauts: äöüß" "Added German characters"
+```
+
 **Note:** You need to have valid credentials in your `CREDENTIALS.txt` file to update pages. Edit summaries are optional but recommended for better tracking of changes.
+
+**UTF-8 Support:** The tool fully supports UTF-8 encoding for all text operations. However, display of special characters in the Windows console may be limited by the system's font and encoding settings.
 
 ### Print Help
 
@@ -154,6 +163,52 @@ If you want to build the project from source, follow these steps:
    target/mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar
    ```
 
+## Encoding and Character Support
+
+### UTF-8 Support
+
+The MediaWiki CLI tool fully supports UTF-8 encoding for:
+
+- **API Communication**: All requests and responses use UTF-8
+- **File I/O**: Credentials and configuration files are read/written in UTF-8
+- **Text Content**: Page content and edit summaries support UTF-8 characters
+- **International Characters**: German umlauts (äöüß), accented characters (éèê), and other European scripts
+
+### Windows Console Limitations
+
+While the tool internally handles UTF-8 correctly, the Windows command prompt (`cmd.exe`) has limitations:
+
+- **Character Display**: Special characters may not display correctly in the console
+- **Data Integrity**: The actual data transmitted to/from the MediaWiki API is correct
+- **Workarounds**:
+  - Use PowerShell instead of cmd.exe
+  - Redirect output to a file: `mwcli.bat --read PageName > output.txt`
+  - Use Windows Terminal with UTF-8 support
+  - Set console code page: `chcp 65001` before running
+
+### Verifying Data Integrity
+
+To verify that UTF-8 characters are being handled correctly:
+
+1. **Update a page with special characters**:
+   ```bash
+   mwcli.bat --update "TestPage" "Test content: äöüß" "UTF-8 test"
+   ```
+
+2. **Check the page in your browser**: The characters should display correctly in the web interface
+
+3. **Compare with API response**: The raw JSON from the MediaWiki API contains proper Unicode escape sequences
+
+### Character Support Matrix
+
+| Character Type | CLI Support | Console Display | Web Display |
+|---------------|-------------|----------------|-------------|
+| German umlauts (äöüß) | ✅ Yes | ⚠️ Limited | ✅ Yes |
+| Accented characters (éèê) | ✅ Yes | ⚠️ Limited | ✅ Yes |
+| Basic punctuation | ✅ Yes | ✅ Yes | ✅ Yes |
+| Emoji/special symbols | ✅ Yes | ❌ No | ⚠️ Depends on wiki config |
+| CJK characters | ✅ Yes | ❌ No | ⚠️ Depends on wiki config |
+
 ## Troubleshooting
 
 ### Login Issues
@@ -169,6 +224,14 @@ If a page is not found, ensure that:
 - The page name is spelled correctly.
 - The page exists on the MediaWiki site.
 - You have the necessary permissions to view the page.
+
+### Encoding Issues
+
+If special characters don't display correctly:
+- This is likely a Windows console limitation, not a tool issue
+- The data is stored correctly on the wiki (check in your browser)
+- Try redirecting output to a file or using PowerShell
+- Set console code page: `chcp 65001`
 
 ## License
 
