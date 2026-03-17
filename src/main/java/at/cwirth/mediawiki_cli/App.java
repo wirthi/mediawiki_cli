@@ -29,12 +29,23 @@ public class App
             Map<String, String> credentials = CredentialsReader.readCredentials();
             MediaWikiClient client = new MediaWikiClient(credentials.get("site"));
             
+            // Login if credentials are available
+            if (credentials.containsKey("user") && credentials.containsKey("password")) {
+                boolean loginSuccess = client.login(credentials.get("user"), credentials.get("password"));
+                if (!loginSuccess) {
+                    System.err.println("Warning: Login failed. Some operations may not work.");
+                }
+            }
+            
             switch (command) {
                 case COMMAND_READ:
                     handleReadCommand(args, client);
                     break;
                 case COMMAND_READ_CATEGORY:
                     handleReadCategoryCommand(args, client);
+                    break;
+                case COMMAND_UPDATE:
+                    handleUpdateCommand(args, client);
                     break;
                 case COMMAND_HELP:
                     printUsage();
@@ -45,6 +56,8 @@ public class App
             }
         } catch (IOException e) {
             System.err.println("Error reading credentials: " + e.getMessage());
+        } catch (InterruptedException e) {
+            System.err.println("Error during login: " + e.getMessage());
         }
     }
     
@@ -111,6 +124,36 @@ public class App
     }
     
     /**
+     * Handles the --update command.
+     *
+     * @param args The command-line arguments.
+     * @param client The MediaWiki client.
+     */
+    private static void handleUpdateCommand(String[] args, MediaWikiClient client) {
+        if (args.length < 3) {
+            System.err.println("Error: --update command requires a page name and content.");
+            printUsage();
+            return;
+        }
+        
+        String pageName = args[1];
+        String content = args[2];
+        
+        try {
+            System.out.println("Updating page: " + pageName);
+            boolean success = client.updatePage(pageName, content);
+            
+            if (success) {
+                System.out.println("Page '" + pageName + "' updated successfully.");
+            } else {
+                System.err.println("Error: Failed to update page '" + pageName + "'.");
+            }
+        } catch (IOException | InterruptedException e) {
+            System.err.println("Error updating page: " + e.getMessage());
+        }
+    }
+    
+    /**
      * Prints the usage information for the CLI tool.
      */
     private static void printUsage() {
@@ -121,11 +164,13 @@ public class App
         System.out.println("Commands:");
         System.out.println("  --read <page_name>        Read and print the content of a page");
         System.out.println("  --read-category <category>  Read and print the list of pages in a category");
+        System.out.println("  --update <page_name> <content>  Update a page with new content");
         System.out.println("  --help                   Print this help message");
         System.out.println();
         System.out.println("Examples:");
         System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --read Hauptseite");
         System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --read-category Linz");
+        System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --update TestPage \"This is new content\"");
         System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --help");
     }
 }

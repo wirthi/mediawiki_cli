@@ -73,6 +73,21 @@ java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --read-category
 java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --read-category Linz
 ```
 
+### Update a Page
+
+To update the content of a page, use the `--update` command followed by the page name and the new content:
+
+```bash
+java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --update "Page Name" "New content"
+```
+
+**Example:**
+```bash
+java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --update "Benutzer:YourName/TestPage" "This is my updated content."
+```
+
+**Note:** You need to have valid credentials in your `CREDENTIALS.txt` file to update pages.
+
 ### Print Help
 
 To print the help message, use the `--help` command:
@@ -93,6 +108,12 @@ java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --read Hauptsei
 
 ```bash
 java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --read-category Linz
+```
+
+### Update a Page
+
+```bash
+java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --update "Benutzer:YourName/TestPage" "Updated content"
 ```
 
 ### Print Help Message

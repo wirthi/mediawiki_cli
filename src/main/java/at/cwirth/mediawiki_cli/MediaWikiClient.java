@@ -377,10 +377,29 @@ public class MediaWikiClient {
     private boolean isSuccess(String response) {
         try {
             JsonNode root = objectMapper.readTree(response);
-            JsonNode result = root.path("login").path("result");
-            return "Success".equals(result.asText());
+            
+            // Check for login success
+            JsonNode loginResult = root.path("login").path("result");
+            if (loginResult.isTextual() && "Success".equals(loginResult.asText())) {
+                return true;
+            }
+            
+            // Check for edit success
+            JsonNode editResult = root.path("edit").path("result");
+            if (editResult.isTextual() && "Success".equals(editResult.asText())) {
+                return true;
+            }
+            
+            // Check for errors
+            if (root.has("error")) {
+                System.err.println("API Error: " + root.path("error").path("info").asText());
+                return false;
+            }
+            
+            return false;
         } catch (Exception e) {
             System.err.println("Error checking success status: " + e.getMessage());
+            System.err.println("Response: " + response);
             return false;
         }
     }
