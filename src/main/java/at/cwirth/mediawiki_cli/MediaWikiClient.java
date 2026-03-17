@@ -151,11 +151,12 @@ public class MediaWikiClient {
      *
      * @param pageTitle The title of the page to update.
      * @param content The new content for the page.
+     * @param summary The edit summary (optional, can be null).
      * @return true if the update was successful, false otherwise.
      * @throws IOException If an error occurs during the update process.
      * @throws InterruptedException If the update process is interrupted.
      */
-    public boolean updatePage(String pageTitle, String content) throws IOException, InterruptedException {
+    public boolean updatePage(String pageTitle, String content, String summary) throws IOException, InterruptedException {
         // Step 1: Get an edit token
         Map<String, String> params = Map.of(
             "action", "query",
@@ -174,17 +175,35 @@ public class MediaWikiClient {
         }
         
         // Step 2: Send the edit request
-        params = Map.of(
-            "action", "edit",
-            "title", pageTitle,
-            "text", content,
-            "token", editToken,
-            "format", "json"
-        );
-        response = sendPostRequest(params);
+        Map<String, String> editParams = new java.util.HashMap<>();
+        editParams.put("action", "edit");
+        editParams.put("title", pageTitle);
+        editParams.put("text", content);
+        editParams.put("token", editToken);
+        editParams.put("format", "json");
+        
+        // Add summary if provided
+        if (summary != null && !summary.isEmpty()) {
+            editParams.put("summary", summary);
+        }
+        
+        response = sendPostRequest(editParams);
         
         // Check if the edit was successful
         return isSuccess(response);
+    }
+    
+    /**
+     * Updates a page on the MediaWiki site (convenience method without summary).
+     *
+     * @param pageTitle The title of the page to update.
+     * @param content The new content for the page.
+     * @return true if the update was successful, false otherwise.
+     * @throws IOException If an error occurs during the update process.
+     * @throws InterruptedException If the update process is interrupted.
+     */
+    public boolean updatePage(String pageTitle, String content) throws IOException, InterruptedException {
+        return updatePage(pageTitle, content, null);
     }
     
     /**

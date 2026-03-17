@@ -138,10 +138,14 @@ public class App
         
         String pageName = args[1];
         String content = args[2];
+        String summary = args.length > 3 ? args[3] : null;
         
         try {
             System.out.println("Updating page: " + pageName);
-            boolean success = client.updatePage(pageName, content);
+            if (summary != null) {
+                System.out.println("Edit summary: " + summary);
+            }
+            boolean success = client.updatePage(pageName, content, summary);
             
             if (success) {
                 System.out.println("Page '" + pageName + "' updated successfully.");
@@ -164,13 +168,14 @@ public class App
         System.out.println("Commands:");
         System.out.println("  --read <page_name>        Read and print the content of a page");
         System.out.println("  --read-category <category>  Read and print the list of pages in a category");
-        System.out.println("  --update <page_name> <content>  Update a page with new content");
+        System.out.println("  --update <page_name> <content> [summary]  Update a page with new content and optional edit summary");
         System.out.println("  --help                   Print this help message");
         System.out.println();
         System.out.println("Examples:");
         System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --read Hauptseite");
         System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --read-category Linz");
         System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --update TestPage \"This is new content\"");
+        System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --update TestPage \"Content\" \"My edit summary\"");
         System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --help");
     }
 }

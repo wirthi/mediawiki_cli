@@ -75,18 +75,25 @@ java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --read-category
 
 ### Update a Page
 
-To update the content of a page, use the `--update` command followed by the page name and the new content:
+To update the content of a page, use the `--update` command followed by the page name and the new content. You can optionally provide an edit summary as a third argument:
 
 ```bash
-java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --update "Page Name" "New content"
+java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --update "Page Name" "New content" ["Edit summary"]
 ```
 
-**Example:**
+**Examples:**
+
+Basic update without summary:
 ```bash
 java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --update "Benutzer:YourName/TestPage" "This is my updated content."
 ```
 
-**Note:** You need to have valid credentials in your `CREDENTIALS.txt` file to update pages.
+Update with edit summary:
+```bash
+java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --update "Benutzer:YourName/TestPage" "Fixed typo" "Typo correction"
+```
+
+**Note:** You need to have valid credentials in your `CREDENTIALS.txt` file to update pages. Edit summaries are optional but recommended for better tracking of changes.
 
 ### Print Help
 
