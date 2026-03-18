@@ -96,10 +96,9 @@ public class App
             
             if (pageContent != null) {
                 if (outputFile != null) {
-                    // Write to file
+                    // Write to file - only the raw content, no headers
                     try (java.io.PrintWriter writer = new java.io.PrintWriter(outputFile, "UTF-8")) {
-                        writer.println("Content of page '" + pageName + "':");
-                        writer.println(pageContent);
+                        writer.print(pageContent);
                         System.out.println("Page content saved to: " + outputFile);
                     } catch (java.io.FileNotFoundException e) {
                         System.err.println("Error writing to file: " + e.getMessage());
