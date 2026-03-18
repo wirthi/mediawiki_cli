@@ -45,14 +45,52 @@ public class MediaWikiClientTest {
         try {
             // Only test login if credentials contain user and password
             if (credentials.containsKey("user") && credentials.containsKey("password")) {
-                // Test login - might fail due to API configuration, but should not throw exception
+                // Test login - should succeed with valid credentials
                 boolean loginSuccess = client.login(credentials.get("user"), credentials.get("password"));
-                // Login might fail due to API returning plain text errors, but exception should not be thrown
-                assertTrue("Login should either succeed or fail gracefully without exception", 
-                          loginSuccess || !loginSuccess); // Always true - testing no exception
+                
+                // With the Cwbotai account credentials, login should succeed
+                // This test will fail if credentials are incorrect or account doesn't exist
+                assertTrue("Login should succeed with valid Cwbotai credentials", loginSuccess);
+                
             } else {
                 // Skip test if no credentials available
                 System.out.println("Skipping login test - no user/password credentials available");
+            }
+        } catch (IOException | InterruptedException e) {
+            fail("Exception should not be thrown: " + e.getMessage());
+        }
+    }
+    
+    @Test
+    public void testUpdatePage() {
+        try {
+            // Only test update if we have valid credentials and login succeeds
+            if (credentials.containsKey("user") && credentials.containsKey("password")) {
+                // First login
+                boolean loginSuccess = client.login(credentials.get("user"), credentials.get("password"));
+                assertTrue("Login required for update operations", loginSuccess);
+                
+                // Test update on a test page
+                String testPage = "Benutzer:Cwbotai/TestPage";
+                String originalContent = client.queryPage(testPage);
+                
+                // Update the page
+                String newContent = "Test content updated at " + System.currentTimeMillis();
+                boolean updateSuccess = client.updatePage(testPage, newContent, "Automated test update");
+                assertTrue("Update should succeed with valid credentials", updateSuccess);
+                
+                // Verify the update worked by reading back
+                String updatedContent = client.queryPage(testPage);
+                assertNotNull("Page should exist after update", updatedContent);
+                assertTrue("Content should be updated", updatedContent.contains("Test content updated at"));
+                
+                // Restore original content if it existed
+                if (originalContent != null) {
+                    client.updatePage(testPage, originalContent, "Restoring original content");
+                }
+            } else {
+                // Skip test if no credentials available
+                System.out.println("Skipping update test - no user/password credentials available");
             }
         } catch (IOException | InterruptedException e) {
             fail("Exception should not be thrown: " + e.getMessage());

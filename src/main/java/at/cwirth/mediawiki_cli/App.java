@@ -32,11 +32,13 @@ public class App
             Map<String, String> credentials = CredentialsReader.readCredentials();
             MediaWikiClient client = new MediaWikiClient(credentials.get("site"));
             
-            // Login if credentials are available
-            if (credentials.containsKey("user") && credentials.containsKey("password")) {
+            // Only login for commands that require authentication (update)
+            boolean needsAuth = command.equals(COMMAND_UPDATE);
+            
+            if (needsAuth && credentials.containsKey("user") && credentials.containsKey("password")) {
                 boolean loginSuccess = client.login(credentials.get("user"), credentials.get("password"));
                 if (!loginSuccess) {
-                    System.err.println("Warning: Login failed. Some operations may not work.");
+                    System.err.println("Warning: Login failed. Update operations will not work.");
                 }
             }
             

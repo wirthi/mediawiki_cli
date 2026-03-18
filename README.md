@@ -35,15 +35,29 @@ A command-line tool for interacting with MediaWiki sites. This tool allows you t
 
 ## Configuration
 
-Before using the tool, you need to configure the credentials for your MediaWiki site. Create a file named `CREDENTIALS.txt` in the same directory as the JAR file with the following content:
+Before using the tool, you need to configure the credentials for your MediaWiki site. Create a file named `CREDENTIALS.txt` in the same directory as the JAR file.
+
+**Note:** A template file `CREDENTIALS.template.txt` is provided. Copy it to `CREDENTIALS.txt` and fill in your credentials.
+
+### Credentials File Format
 
 ```
-site=https://your-mediawiki-site.com/w/
+site=https://your-mediawiki-site.com/
 user=your-username
 password=your-password
 ```
 
-Replace the placeholders with your actual MediaWiki site URL, username, and password.
+**Fields:**
+- `site` (required): The base URL of your MediaWiki site (include trailing slash)
+- `user` (required for updates): Your MediaWiki username
+- `password` (required for updates): Your MediaWiki password
+
+### Important Notes
+
+1. **Read Operations**: Only require the `site` field
+2. **Update Operations**: Require all three fields (`site`, `user`, `password`)
+3. **Security**: Never commit your credentials file to version control
+4. **Encoding**: Save the file as UTF-8 (without BOM) for best compatibility
 
 **Note:** The credentials file is read using UTF-8 encoding, so you can use special characters in passwords if needed.
 
@@ -103,6 +117,8 @@ java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --update "Page 
 # Content from file
 java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --update "Page Name" --file "content.txt" [--summary "Edit summary"]
 ```
+
+**Important:** Update operations require authentication. Ensure your `CREDENTIALS.txt` file contains valid `user` and `password` fields.
 
 **Examples:**
 
@@ -256,6 +272,24 @@ This is expected behavior. Ensure that:
 - The page name is spelled correctly.
 - The page exists on the MediaWiki site.
 - You have the necessary permissions to view the page.
+
+### Update Operations
+
+If you encounter issues with update operations:
+
+1. **Authentication Required**: Update operations require valid credentials
+2. **User Permissions**: Your MediaWiki account must have edit permissions
+3. **API Configuration**: Some wikis may have additional restrictions on API edits
+
+**Common Error:**
+```
+API Error: The action you have requested is limited to users in the group: [[Benutzer|Benutzer]]
+```
+
+**Solution:**
+1. Add your username and password to `CREDENTIALS.txt`
+2. Ensure your account has edit permissions on the wiki
+3. Verify the credentials are correct and the account can log in via the web interface
 
 ### Encoding Issues
 
