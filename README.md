@@ -47,6 +47,11 @@ Replace the placeholders with your actual MediaWiki site URL, username, and pass
 
 **Note:** The credentials file is read using UTF-8 encoding, so you can use special characters in passwords if needed.
 
+**Important:** When creating or editing the credentials file on Windows:
+- Use a proper text editor that supports UTF-8 (Notepad++, VS Code, etc.)
+- Avoid using `echo` or `type` commands which use ANSI encoding by default
+- Save the file with UTF-8 encoding (without BOM for best compatibility)
+
 ## Usage
 
 ### Read a Page
@@ -232,6 +237,11 @@ If special characters don't display correctly:
 - The data is stored correctly on the wiki (check in your browser)
 - Try redirecting output to a file or using PowerShell
 - Set console code page: `chcp 65001`
+
+**Note about file encoding:** Windows command-line tools (`echo`, `type`, file redirection) use ANSI encoding by default. For proper UTF-8 file operations:
+- Use Java applications or proper text editors
+- Our tool handles UTF-8 correctly internally
+- File encoding issues typically come from external tools, not our application
 
 ## License
 

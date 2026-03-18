@@ -116,6 +116,13 @@ This document outlines the setup and guidelines for working with the MediaWiki C
   - Using Windows Terminal with proper font support
   - Testing with `System.setProperty("file.encoding", "UTF-8")`
 
+### Windows File Encoding Issues
+- Windows command-line tools (`echo`, `type`, `>`) use ANSI encoding by default
+- This affects external file operations, not our Java application
+- **Our application uses UTF-8 correctly** for all internal operations
+- For testing with special characters, use proper text editors (Notepad++, VS Code)
+- Save files as UTF-8 (without BOM) for best compatibility
+
 ## Documentation
 - **Javadoc**: Document public methods and classes (needs improvement)
 - **README**: User-facing documentation with examples
