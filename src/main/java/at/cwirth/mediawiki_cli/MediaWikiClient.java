@@ -274,6 +274,12 @@ public class MediaWikiClient {
      */
     private String extractToken(String response, String tokenType) {
         try {
+            // Check if response is a plain text error (not JSON)
+            if (!response.trim().startsWith("{")) {
+                System.err.println("API Error: " + response.trim());
+                return null;
+            }
+            
             JsonNode root = objectMapper.readTree(response);
             
             // Check for errors in the response
@@ -322,6 +328,12 @@ public class MediaWikiClient {
      */
     private String extractPageContent(String response) {
         try {
+            // Check if response is a plain text error (not JSON)
+            if (!response.trim().startsWith("{")) {
+                System.err.println("API Error: " + response.trim());
+                return null;
+            }
+            
             JsonNode root = objectMapper.readTree(response);
             
             // Check for errors in the response
@@ -349,7 +361,6 @@ public class MediaWikiClient {
             return revision.path("*").asText();
         } catch (Exception e) {
             System.err.println("Error parsing page content from response: " + e.getMessage());
-            System.err.println("Response: " + response);
             return null;
         }
     }
