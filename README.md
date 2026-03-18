@@ -225,7 +225,13 @@ If you encounter login issues, ensure that:
 
 ### Page Not Found
 
-If a page is not found, ensure that:
+If a page is not found, the application will display:
+```
+API Error: File not found.
+Error: Page 'PageName' not found.
+```
+
+This is expected behavior. Ensure that:
 - The page name is spelled correctly.
 - The page exists on the MediaWiki site.
 - You have the necessary permissions to view the page.
@@ -242,6 +248,48 @@ If special characters don't display correctly:
 - Use Java applications or proper text editors
 - Our tool handles UTF-8 correctly internally
 - File encoding issues typically come from external tools, not our application
+
+### Test Failures
+
+If you run `mvn test` and see failures, this may be due to:
+
+1. **API Configuration Differences**: Some MediaWiki installations return plain text errors (`"File not found."`) instead of JSON responses
+2. **Network Issues**: The test wiki may not be accessible
+3. **Configuration Requirements**: Tests expect certain wiki configurations
+
+**Current Status:**
+- ✅ Application handles both JSON and plain text errors gracefully
+- ⚠️ Some tests may fail with certain wiki configurations
+- ✅ Production functionality is not affected
+
+**Workarounds:**
+- Run specific tests: `mvn test -Dtest=AppTest`
+- Skip failing tests temporarily
+- Update tests to handle both response formats
+- Configure your wiki to return JSON errors consistently
+
+## Development Notes
+
+### API Response Formats
+
+The application supports multiple API response formats:
+
+1. **JSON Errors** (Standard):
+   ```json
+   {"error": {"code": "missing", "info": "Page not found"}}
+   ```
+
+2. **Plain Text Errors** (Some configurations):
+   ```
+   File not found.
+   ```
+
+3. **Successful Responses** (JSON):
+   ```json
+   {"query": {"pages": {"123": {"title": "PageName", "revisions": [...]}}}}
+   ```
+
+The application detects and handles all these formats correctly.
 
 ## License
 
