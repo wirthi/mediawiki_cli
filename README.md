@@ -56,15 +56,27 @@ Replace the placeholders with your actual MediaWiki site URL, username, and pass
 
 ### Read a Page
 
-To read the content of a page, use the `--read` command followed by the page name:
+To read the content of a page, use the `--read` command followed by the page name. Optionally, you can save the content to a file using the `--file` option:
 
 ```bash
-java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --read "Page Name"
+java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --read "Page Name" [--file "filename.txt"]
 ```
 
-**Example:**
+**Examples:**
+
+Read and display page content:
 ```bash
-java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --read Hauptseite
+java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --read "Hauptseite"
+```
+
+Read and save to file:
+```bash
+java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --read "Hauptseite" --file "hauptseite_content.txt"
+```
+
+Read with UTF-8 characters and save:
+```bash
+java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --read "PageWithUmlauts" --file "output.txt"
 ```
 
 ### Read a Category

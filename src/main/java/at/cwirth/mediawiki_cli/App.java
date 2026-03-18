@@ -78,14 +78,37 @@ public class App
         }
         
         String pageName = args[1];
+        String outputFile = null;
+        
+        // Check for --file option
+        for (int i = 2; i < args.length; i++) {
+            if (args[i].equals("--file") && i + 1 < args.length) {
+                outputFile = args[i + 1];
+                i++; // Skip the filename in next iteration
+            }
+        }
         
         try {
             System.out.println("Querying page: " + pageName);
             String pageContent = client.queryPage(pageName);
             
             if (pageContent != null) {
-                System.out.println("\nContent of page '" + pageName + "':");
-                System.out.println(pageContent);
+                if (outputFile != null) {
+                    // Write to file
+                    try (java.io.PrintWriter writer = new java.io.PrintWriter(outputFile, "UTF-8")) {
+                        writer.println("Content of page '" + pageName + "':");
+                        writer.println(pageContent);
+                        System.out.println("Page content saved to: " + outputFile);
+                    } catch (java.io.FileNotFoundException e) {
+                        System.err.println("Error writing to file: " + e.getMessage());
+                    } catch (java.io.UnsupportedEncodingException e) {
+                        System.err.println("Error: UTF-8 encoding not supported: " + e.getMessage());
+                    }
+                } else {
+                    // Print to console
+                    System.out.println("\nContent of page '" + pageName + "':");
+                    System.out.println(pageContent);
+                }
             } else {
                 System.out.println("Error: Page '" + pageName + "' not found.");
             }
@@ -169,13 +192,14 @@ public class App
         System.out.println("Usage: java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar <command> [arguments]");
         System.out.println();
         System.out.println("Commands:");
-        System.out.println("  --read <page_name>        Read and print the content of a page");
-        System.out.println("  --read-category <category>  Read and print the list of pages in a category");
+        System.out.println("  --read <page_name> [--file <filename>]  Read page content (optionally save to file)");
+        System.out.println("  --read-category <category>             Read and print the list of pages in a category");
         System.out.println("  --update <page_name> <content> [summary]  Update a page with new content and optional edit summary");
-        System.out.println("  --help                   Print this help message");
+        System.out.println("  --help                                  Print this help message");
         System.out.println();
         System.out.println("Examples:");
         System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --read Hauptseite");
+        System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --read Hauptseite --file output.txt");
         System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --read-category Linz");
         System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --update TestPage \"This is new content\"");
         System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --update TestPage \"Content\" \"My edit summary\"");
