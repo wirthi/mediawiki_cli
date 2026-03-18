@@ -32,7 +32,9 @@ public class MediaWikiClient {
      * @param siteUrl The base URL of the MediaWiki site (e.g., "https://www.linzwiki.at/").
      */
     public MediaWikiClient(String siteUrl) {
-        this.apiUrl = siteUrl + "api.php";
+        // Remove trailing slash if present, then add the standard MediaWiki API path
+        String normalizedSiteUrl = siteUrl.endsWith("/") ? siteUrl.substring(0, siteUrl.length() - 1) : siteUrl;
+        this.apiUrl = normalizedSiteUrl + "/w/api.php";
         this.httpClient = HttpClient.newBuilder()
                 .cookieHandler(new CookieManager())
                 .build();
