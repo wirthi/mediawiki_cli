@@ -157,14 +157,41 @@ public class App
      */
     private static void handleUpdateCommand(String[] args, MediaWikiClient client) {
         if (args.length < 3) {
-            System.err.println("Error: --update command requires a page name and content.");
+            System.err.println("Error: --update command requires a page name and --content or --file option.");
             printUsage();
             return;
         }
         
         String pageName = args[1];
-        String content = args[2];
-        String summary = args.length > 3 ? args[3] : null;
+        String content = null;
+        String summary = null;
+        
+        // Parse arguments to find --content, --file, and --summary
+        for (int i = 2; i < args.length; i++) {
+            if (args[i].equals("--content") && i + 1 < args.length) {
+                content = args[i + 1];
+                i++; // Skip the content in next iteration
+            } else if (args[i].equals("--file") && i + 1 < args.length) {
+                // Read content from file
+                try {
+                    content = readFileContent(args[i + 1]);
+                    i++; // Skip the filename in next iteration
+                } catch (IOException e) {
+                    System.err.println("Error reading file: " + e.getMessage());
+                    return;
+                }
+            } else if (args[i].equals("--summary") && i + 1 < args.length) {
+                summary = args[i + 1];
+                i++; // Skip the summary in next iteration
+            }
+        }
+        
+        // Validate that we have content
+        if (content == null) {
+            System.err.println("Error: --update command requires either --content or --file option.");
+            printUsage();
+            return;
+        }
         
         try {
             System.out.println("Updating page: " + pageName);
@@ -184,6 +211,27 @@ public class App
     }
     
     /**
+     * Reads content from a file with UTF-8 encoding.
+     *
+     * @param filePath The path to the file.
+     * @return The file content as a string.
+     * @throws IOException If an error occurs while reading the file.
+     */
+    private static String readFileContent(String filePath) throws IOException {
+        StringBuilder content = new StringBuilder();
+        
+        try (java.io.BufferedReader reader = new java.io.BufferedReader(
+                new java.io.InputStreamReader(new java.io.FileInputStream(filePath), java.nio.charset.StandardCharsets.UTF_8))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                content.append(line).append("\n");
+            }
+        }
+        
+        return content.toString();
+    }
+    
+    /**
      * Prints the usage information for the CLI tool.
      */
     private static void printUsage() {
@@ -192,17 +240,18 @@ public class App
         System.out.println("Usage: java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar <command> [arguments]");
         System.out.println();
         System.out.println("Commands:");
-        System.out.println("  --read <page_name> [--file <filename>]  Read page content (optionally save to file)");
-        System.out.println("  --read-category <category>             Read and print the list of pages in a category");
-        System.out.println("  --update <page_name> <content> [summary]  Update a page with new content and optional edit summary");
-        System.out.println("  --help                                  Print this help message");
+        System.out.println("  --read <page_name> [--file <filename>]          Read page content (optionally save to file)");
+        System.out.println("  --read-category <category>                       Read and print the list of pages in a category");
+        System.out.println("  --update <page_name> (--content <text> | --file <filename>) [--summary <text>]");
+        System.out.println("                                                  Update a page with content from text or file");
+        System.out.println("  --help                                            Print this help message");
         System.out.println();
         System.out.println("Examples:");
         System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --read Hauptseite");
         System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --read Hauptseite --file output.txt");
         System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --read-category Linz");
-        System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --update TestPage \"This is new content\"");
-        System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --update TestPage \"Content\" \"My edit summary\"");
+        System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --update TestPage --content \"This is new content\"");
+        System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --update TestPage --file content.txt --summary \"My summary\"");
         System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --help");
     }
 }

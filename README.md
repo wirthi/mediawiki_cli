@@ -94,27 +94,36 @@ java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --read-category
 
 ### Update a Page
 
-To update the content of a page, use the `--update` command followed by the page name and the new content. You can optionally provide an edit summary as a third argument:
+To update the content of a page, use the `--update` command with either `--content` for direct text or `--file` to read from a file. You can optionally provide an edit summary with `--summary`:
 
 ```bash
-java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --update "Page Name" "New content" ["Edit summary"]
+# Direct content
+java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --update "Page Name" --content "New content" [--summary "Edit summary"]
+
+# Content from file
+java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --update "Page Name" --file "content.txt" [--summary "Edit summary"]
 ```
 
 **Examples:**
 
-Basic update without summary:
+Update with direct content:
 ```bash
-java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --update "Benutzer:YourName/TestPage" "This is my updated content."
+java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --update "Benutzer:YourName/TestPage" --content "This is my updated content."
 ```
 
-Update with edit summary (supports UTF-8):
+Update with content from file:
 ```bash
-java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --update "Benutzer:YourName/TestPage" "Fixed typo" "Typo correction"
+java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --update "Benutzer:YourName/TestPage" --file "content.txt"
 ```
 
-Update with German umlauts:
+Update with content and summary:
 ```bash
-java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --update "Benutzer:YourName/TestPage" "Updated content with umlauts: äöüß" "Added German characters"
+java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --update "Benutzer:YourName/TestPage" --content "Fixed typo" --summary "Typo correction"
+```
+
+Update with German umlauts from file:
+```bash
+java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --update "Benutzer:YourName/TestPage" --file "content_with_umlauts.txt" --summary "Added German characters"
 ```
 
 **Note:** You need to have valid credentials in your `CREDENTIALS.txt` file to update pages. Edit summaries are optional but recommended for better tracking of changes.
