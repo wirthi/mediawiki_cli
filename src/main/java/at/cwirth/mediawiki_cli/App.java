@@ -87,7 +87,7 @@ public class App
                 System.out.println("\nContent of page '" + pageName + "':");
                 System.out.println(pageContent);
             } else {
-                System.err.println("Error: Page '" + pageName + "' not found.");
+                System.out.println("Error: Page '" + pageName + "' not found.");
             }
         } catch (IOException | InterruptedException e) {
             System.err.println("Error querying page: " + e.getMessage());
@@ -119,7 +119,7 @@ public class App
                     System.out.println("- " + title);
                 }
             } else {
-                System.err.println("Error: Category '" + categoryName + "' not found or is empty.");
+                System.out.println("Error: Category '" + categoryName + "' not found or is empty.");
             }
         } catch (IOException | InterruptedException e) {
             System.err.println("Error querying category: " + e.getMessage());
