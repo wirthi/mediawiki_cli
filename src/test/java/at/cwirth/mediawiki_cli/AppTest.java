@@ -123,6 +123,26 @@ public class AppTest
     }
     
     /**
+     * Test the --read-category command with --file option.
+     */
+    public void testReadCategoryCommandWithFile() {
+        String[] args = {"--read-category", "Linz", "--file", "test_category_output.txt"};
+        App.main(args);
+        
+        String output = outContent.toString();
+        // Should either succeed with file output or handle error properly
+        boolean success = output.contains("Category members saved to:");
+        boolean errorHandled = output.contains("API Error:") || output.contains("Error: Category 'Linz' not found");
+        assertTrue("Output should contain either file save confirmation or proper error message", success || errorHandled);
+        
+        // Clean up test file if it was created
+        java.io.File testFile = new java.io.File("test_category_output.txt");
+        if (testFile.exists()) {
+            testFile.delete();
+        }
+    }
+    
+    /**
      * Test the --read-category command with a missing category name.
      */
     public void testReadCategoryCommandMissingCategoryName() {

@@ -132,15 +132,39 @@ public class App
         }
         
         String categoryName = args[1];
+        String outputFile = null;
+        
+        // Check for --file option
+        for (int i = 2; i < args.length; i++) {
+            if (args[i].equals("--file") && i + 1 < args.length) {
+                outputFile = args[i + 1];
+                i++; // Skip the filename in next iteration
+            }
+        }
         
         try {
             System.out.println("Querying category: " + categoryName);
             String[] pageTitles = client.queryCategory(categoryName);
             
             if (pageTitles != null && pageTitles.length > 0) {
-                System.out.println("\nPages in category '" + categoryName + "':");
-                for (String title : pageTitles) {
-                    System.out.println("- " + title);
+                if (outputFile != null) {
+                    // Write to file - only the raw list, no headers
+                    try (java.io.PrintWriter writer = new java.io.PrintWriter(outputFile, "UTF-8")) {
+                        for (String title : pageTitles) {
+                            writer.println(title);
+                        }
+                        System.out.println("Category members saved to: " + outputFile);
+                    } catch (java.io.FileNotFoundException e) {
+                        System.err.println("Error writing to file: " + e.getMessage());
+                    } catch (java.io.UnsupportedEncodingException e) {
+                        System.err.println("Error: UTF-8 encoding not supported: " + e.getMessage());
+                    }
+                } else {
+                    // Print to console
+                    System.out.println("\nPages in category '" + categoryName + "':");
+                    for (String title : pageTitles) {
+                        System.out.println("- " + title);
+                    }
                 }
             } else {
                 System.out.println("Error: Category '" + categoryName + "' not found or is empty.");
@@ -242,7 +266,7 @@ public class App
         System.out.println();
         System.out.println("Commands:");
         System.out.println("  --read <page_name> [--file <filename>]          Read page content (optionally save to file)");
-        System.out.println("  --read-category <category>                       Read and print the list of pages in a category");
+        System.out.println("  --read-category <category> [--file <filename>]  Read and print the list of pages in a category");
         System.out.println("  --update <page_name> (--content <text> | --file <filename>) [--summary <text>]");
         System.out.println("                                                  Update a page with content from text or file");
         System.out.println("  --help                                            Print this help message");
@@ -251,6 +275,7 @@ public class App
         System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --read Hauptseite");
         System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --read Hauptseite --file output.txt");
         System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --read-category Linz");
+        System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --read-category Linz --file category_members.txt");
         System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --update TestPage --content \"This is new content\"");
         System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --update TestPage --file content.txt --summary \"My summary\"");
         System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --help");

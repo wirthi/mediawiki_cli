@@ -9,11 +9,6 @@ Once you are satisfied and the tests pass
 If you get stuck, then abort and ask for help.
 
 
-## Update pages
-* there should be an --update command, that accepts a page name (for the server) and a local filename (for the content to upload).
-* optionally, a comment can also be passed
-* this should work for updating pages, but also for creating new pages
-
 ## Pagination for --read-category
 * --read-category is currently limited to 500 categories to be read
 * we need to make this configurable. 
