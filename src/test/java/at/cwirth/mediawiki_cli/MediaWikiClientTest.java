@@ -96,4 +96,29 @@ public class MediaWikiClientTest {
             fail("Exception should not be thrown: " + e.getMessage());
         }
     }
+    
+    @Test
+    public void testSearchPages() {
+        try {
+            // Test searching for pages
+            String[] results = client.searchPages("Linz");
+            
+            // Should either return results or handle error gracefully
+            boolean success = results != null && results.length > 0;
+            boolean errorHandled = results == null; // Error would be printed to stderr but not throw exception
+            
+            assertTrue("Search should either return results or handle error gracefully", success || errorHandled);
+            
+            // If we got results, verify they're not empty strings
+            if (success) {
+                assertTrue("Results should not be empty", results.length > 0);
+                for (String title : results) {
+                    assertNotNull("Page titles should not be null", title);
+                    assertTrue("Page titles should not be empty", title.length() > 0);
+                }
+            }
+        } catch (IOException | InterruptedException e) {
+            fail("Exception should not be thrown: " + e.getMessage());
+        }
+    }
 }

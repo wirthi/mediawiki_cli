@@ -13,6 +13,7 @@ public class App
 {
     private static final String COMMAND_READ = "--read";
     private static final String COMMAND_READ_CATEGORY = "--read-category";
+    private static final String COMMAND_SEARCH = "--search";
     private static final String COMMAND_UPDATE = "--update";
     private static final String COMMAND_HELP = "--help";
     
@@ -48,6 +49,9 @@ public class App
                     break;
                 case COMMAND_READ_CATEGORY:
                     handleReadCategoryCommand(args, client);
+                    break;
+                case COMMAND_SEARCH:
+                    handleSearchCommand(args, client);
                     break;
                 case COMMAND_UPDATE:
                     handleUpdateCommand(args, client);
@@ -175,6 +179,62 @@ public class App
     }
     
     /**
+     * Handles the --search command.
+     *
+     * @param args The command-line arguments.
+     * @param client The MediaWiki client.
+     */
+    private static void handleSearchCommand(String[] args, MediaWikiClient client) {
+        if (args.length < 2) {
+            System.err.println("Error: --search command requires a search term.");
+            printUsage();
+            return;
+        }
+        
+        String searchText = args[1];
+        String outputFile = null;
+        
+        // Check for --file option
+        for (int i = 2; i < args.length; i++) {
+            if (args[i].equals("--file") && i + 1 < args.length) {
+                outputFile = args[i + 1];
+                i++; // Skip the filename in next iteration
+            }
+        }
+        
+        try {
+            System.out.println("Searching for: " + searchText);
+            String[] searchResults = client.searchPages(searchText);
+            
+            if (searchResults != null && searchResults.length > 0) {
+                if (outputFile != null) {
+                    // Write to file - only the raw list, no headers
+                    try (java.io.PrintWriter writer = new java.io.PrintWriter(outputFile, "UTF-8")) {
+                        for (String title : searchResults) {
+                            writer.println(title);
+                        }
+                        System.out.println("Search results saved to: " + outputFile);
+                    } catch (java.io.FileNotFoundException e) {
+                        System.err.println("Error writing to file: " + e.getMessage());
+                    } catch (java.io.UnsupportedEncodingException e) {
+                        System.err.println("Error: UTF-8 encoding not supported: " + e.getMessage());
+                    }
+                } else {
+                    // Print to console
+                    System.out.println("\nSearch results for '" + searchText + "':");
+                    for (String title : searchResults) {
+                        System.out.println("- " + title);
+                    }
+                }
+            } else {
+                System.out.println("No results found for: " + searchText);
+            }
+        } catch (IOException | InterruptedException e) {
+            System.err.println("Error searching pages: " + e.getMessage());
+        }
+    }
+    
+    /**
      * Handles the --update command.
      *
      * @param args The command-line arguments.
@@ -267,6 +327,7 @@ public class App
         System.out.println("Commands:");
         System.out.println("  --read <page_name> [--file <filename>]          Read page content (optionally save to file)");
         System.out.println("  --read-category <category> [--file <filename>]  Read and print the list of pages in a category");
+        System.out.println("  --search <search_text> [--file <filename>]     Search for pages containing the specified text");
         System.out.println("  --update <page_name> (--content <text> | --file <filename>) [--summary <text>]");
         System.out.println("                                                  Update a page with content from text or file");
         System.out.println("  --help                                            Print this help message");
@@ -276,6 +337,8 @@ public class App
         System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --read Hauptseite --file output.txt");
         System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --read-category Linz");
         System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --read-category Linz --file category_members.txt");
+        System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --search Linz");
+        System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --search Linz --file search_results.txt");
         System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --update TestPage --content \"This is new content\"");
         System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --update TestPage --file content.txt --summary \"My summary\"");
         System.out.println("  java -jar mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --help");

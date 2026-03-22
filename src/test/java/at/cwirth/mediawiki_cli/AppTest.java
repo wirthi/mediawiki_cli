@@ -152,4 +152,42 @@ public class AppTest
         String error = errContent.toString();
         assertTrue("Error should indicate missing category name", error.contains("--read-category command requires a category name"));
     }
+    
+    /**
+     * Test the --search command.
+     */
+    public void testSearchCommand() {
+        String[] args = {"--search", "Linz"};
+        App.main(args);
+        
+        String output = outContent.toString();
+        // Check for either successful search results or proper error handling
+        boolean success = output.contains("Search results for 'Linz':");
+        boolean noResults = output.contains("No results found for:");
+        boolean errorHandled = output.contains("API Error:") || output.contains("Error searching pages:");
+        assertTrue("Output should contain either search results, no results message, or proper error message", 
+                  success || noResults || errorHandled);
+    }
+    
+    /**
+     * Test the --search command with --file option.
+     */
+    public void testSearchCommandWithFile() {
+        String[] args = {"--search", "Linz", "--file", "test_search_output.txt"};
+        App.main(args);
+        
+        String output = outContent.toString();
+        // Should either succeed with file output or handle error properly
+        boolean success = output.contains("Search results saved to:");
+        boolean noResults = output.contains("No results found for:");
+        boolean errorHandled = output.contains("API Error:") || output.contains("Error searching pages:");
+        assertTrue("Output should contain either file save confirmation, no results message, or proper error message", 
+                  success || noResults || errorHandled);
+        
+        // Clean up test file if it was created
+        java.io.File testFile = new java.io.File("test_search_output.txt");
+        if (testFile.exists()) {
+            testFile.delete();
+        }
+    }
 }

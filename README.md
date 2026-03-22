@@ -33,6 +33,21 @@ A command-line tool for interacting with MediaWiki sites. This tool allows you t
    target/mediawiki-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar
    ```
 
+### Using Stable Releases (Recommended for External Projects)
+
+For production use, we recommend using the stable releases from the `release/` directory:
+
+```bash
+# Copy the latest stable release to your project
+xcopy "mediawiki-cli\release\latest" "your-project\libs\cli" /E
+
+# Use the convenient batch file
+cd your-project\libs\cli
+mwcli.bat --help
+```
+
+See [RELEASE-GUIDE.md](RELEASE-GUIDE.md) for detailed release management instructions.
+
 ## Configuration
 
 Before using the tool, you need to configure the credentials for your MediaWiki site. Create a file named `CREDENTIALS.txt` in the same directory as the JAR file.

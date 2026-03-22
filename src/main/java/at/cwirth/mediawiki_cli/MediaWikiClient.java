@@ -401,6 +401,67 @@ public class MediaWikiClient {
     }
     
     /**
+     * Searches for pages containing the specified text.
+     *
+     * @param searchText The text to search for.
+     * @return An array of page titles that match the search, or null if an error occurs.
+     * @throws IOException If an error occurs during the search process.
+     * @throws InterruptedException If the search process is interrupted.
+     */
+    public String[] searchPages(String searchText) throws IOException, InterruptedException {
+        Map<String, String> params = Map.of(
+            "action", "query",
+            "list", "search",
+            "srsearch", searchText,
+            "srlimit", "500",
+            "format", "json"
+        );
+        String response = sendGetRequest(params);
+        
+        // Parse the search results from the response
+        return extractSearchResults(response);
+    }
+    
+    /**
+     * Extracts search results from the API response.
+     *
+     * @param response The API response.
+     * @return An array of page titles that match the search, or null if not found.
+     */
+    private String[] extractSearchResults(String response) {
+        try {
+            // Check if response is a plain text error (not JSON)
+            if (!response.trim().startsWith("{")) {
+                System.err.println("API Error: " + response.trim());
+                return null;
+            }
+            
+            JsonNode root = objectMapper.readTree(response);
+            
+            // Check for errors in the response
+            if (root.has("error")) {
+                System.err.println("API Error: " + root.path("error").path("info").asText());
+                return null;
+            }
+            
+            JsonNode query = root.path("query");
+            JsonNode searchResults = query.path("search");
+            
+            // Collect the page titles
+            java.util.List<String> pageTitles = new java.util.ArrayList<>();
+            for (JsonNode result : searchResults) {
+                pageTitles.add(result.path("title").asText());
+            }
+            
+            return pageTitles.toArray(new String[0]);
+        } catch (Exception e) {
+            System.err.println("Error parsing search results from response: " + e.getMessage());
+            System.err.println("Response: " + response);
+            return null;
+        }
+    }
+    
+    /**
      * Checks if the API response indicates a successful operation.
      *
      * @param response The API response.
